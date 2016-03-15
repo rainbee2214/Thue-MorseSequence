@@ -1,15 +1,21 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 
-public class Point : MonoBehaviour
+[RequireComponent(typeof(TrailRenderer))]
+public class Point_TrailRenderer : MonoBehaviour
 {
     public float delay = 0.1f;
     public bool batchDraw = true;
-    public int batchSize = 100;
+    public int batchSize = 4;
     public bool move;
-    [Range(0,360)]
-    public int startingAngle = 0;
-   Vector2 direction = Vector2.right;
+    public Text text;
+    public float thetaCap = 360;
+    public bool testTheta;
+
+    [Range(0, 360)]
+    int startingAngle = 0;
+    Vector2 direction = Vector2.right;
 
     bool moving;
     ulong count;
@@ -18,6 +24,7 @@ public class Point : MonoBehaviour
 
     void Awake()
     {
+        startingAngle = (int)transform.localEulerAngles.z;
         direction.Set(Mathf.Cos(startingAngle * Mathf.PI / 180f), Mathf.Sin(startingAngle * Mathf.PI / 180f));
         theta = startingAngle;
     }
@@ -30,7 +37,9 @@ public class Point : MonoBehaviour
             moving = true;
             StartCoroutine(StartMoving());
         }
+       if (text != null) text.text = theta.ToString();
     }
+
     IEnumerator StartMoving()
     {
         while (moving)
@@ -77,6 +86,10 @@ public class Point : MonoBehaviour
     void Rotate()
     {
         theta += Mathf.PI / 3f;
+        if (testTheta)
+        {
+            if (theta >= thetaCap) theta = 0;
+        }
         direction = new Vector2(Mathf.Cos(theta), Mathf.Sin(theta));
     }
 
